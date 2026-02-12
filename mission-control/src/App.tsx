@@ -6,6 +6,9 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const swarmRef = useRef<Swarm | null>(null);
 
+  const CANVAS_WIDTH = 800.0;
+  const CANVAS_HEIGHT = 600.0;
+
   useEffect(() => {
     let animationId: number;
     let isMounted = true;
@@ -14,7 +17,7 @@ function App() {
       await init();
       if (!isMounted) return;
 
-      swarmRef.current = Swarm.new(100, 800.0, 600.0);
+      swarmRef.current = Swarm.new(100, CANVAS_WIDTH, CANVAS_HEIGHT);
       const ctx = canvasRef.current?.getContext("2d");
 
       const render = () => {
@@ -22,17 +25,30 @@ function App() {
 
         swarmRef.current.tick();
 
-        ctx.fillStyle = "#4B2C20";
+        // the -> Unexplored" background not touched
+        ctx.fillStyle = "#1a0f0a";
         ctx.fillRect(0, 0, 800, 600);
 
+        // 2. Drawing the Mapped Areas
+        ctx.fillStyle = "#4B2C20";
+        const cols = CANVAS_WIDTH / 10;
+        const rows = CANVAS_HEIGHT / 10;
+
+        for (let x = 0; x < cols; x++) {
+          for (let y = 0; y < rows; y++) {
+            if (swarmRef.current.is_cell_mapped(x, y)) {
+              ctx.fillRect(x * 10, y * 10, 10, 10);
+            }
+          }
+        }
+
+        // Drawing the rover loop
         ctx.fillStyle = "white";
         const count = swarmRef.current.count();
-
-        // draw every single rover that is created
         for (let i = 0; i < count; i++) {
-          const x = swarmRef.current.get_rover_x(i);
-          const y = swarmRef.current.get_rover_y(i);
-          ctx.fillRect(x, y, 4, 4);
+          const rx = swarmRef.current.get_rover_x(i);
+          const ry = swarmRef.current.get_rover_y(i);
+          ctx.fillRect(rx, ry, 3, 3);
         }
 
         animationId = requestAnimationFrame(render);
@@ -57,4 +73,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
