@@ -51,6 +51,14 @@ function App() {
           ctx.fillRect(rx, ry, 3, 3);
         }
 
+        const roverCount = document.getElementById("roverCount");
+        const mappedAreaPercentCount = document.getElementById("mappedArea");
+
+        if (roverCount && mappedAreaPercentCount) {
+          roverCount.innerText = swarmRef.current.count().toString();
+          mappedAreaPercentCount.innerText = swarmRef.current.get_mapped_percentage().toFixed(2) + "%";
+        }
+
         animationId = requestAnimationFrame(render);
       };
       render();
@@ -68,6 +76,11 @@ function App() {
   return (
     <div id="main">
       <h1 className="heading">Ares Swarm Mission Control</h1>
+      <div className="stats">
+          <div>STATUS: OPERATIONAL</div>
+          <div>ROVERS: <span id="roverCount">0</span></div>
+          <div>MAPPED AREA: <span id="mappedArea">0.00%</span></div>
+      </div>
       <canvas ref={canvasRef} width={800} height={600}></canvas>
     </div>
   );
